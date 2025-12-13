@@ -1,134 +1,174 @@
-# SunoWell for Cursor
-## A file-based music lab for Suno. Prompts are the code. The folder is the memory.
+# SunoWell
 
-If you have ever made a great Suno track and then failed to reproduce the vibe, you do not have a music problem. You have a memory problem.
+**The problem isn't making music. It's making it again.**
 
-SunoWell is a Markdown-based system (InkWell-style) that lets you:
-- batch-generate Suno style prompts and lyric prompts
-- build cohesive albums on purpose (with controlled variation)
-- track experiments so you do not repeat the same dead ends
-- keep prompting state across sessions with zero tooling
+You've generated something incredible in Suno. Crushed it. Perfect vibe. Then you close the tab, come back tomorrow, and cannot reproduce it. The prompt is gone. The settings are gone. The magic is gone.
 
-This is built for Cursor. You can still use it anywhere that can read files and follow instructions.
+This is not a music problem. It's a memory problem.
 
 ---
 
-## What you get
+## What SunoWell Does
 
-- `AGENT-PLAYBOOK.md`: the runtime loop the agent follows
-- `prompt-packs/`: reusable recipe modules (style, lyrics, cohesion, failmodes)
-- `templates/`: album project template + song card template
-- `projects/`: your albums and batches live here
-- `SUNO-VERSION.md`: versioned assumptions so "best practice" does not rot silently
+SunoWell is a file-based system for batch-generating Suno prompts and building a persistent library of your musical starting points.
 
----
-
-## Quickstart (5 minutes)
-
-1) Open `GIT/sunowell/` in Cursor (or keep BEOS open and work inside this folder).
-2) Copy the template:
-   - Duplicate `templates/album-project-template/` into `projects/<your-album-name>/`
-3) Fill in:
-   - `PROJECT.md`
-   - `STYLE-BIBLE.md`
-   - `LYRIC-BIBLE.md`
-   - `TRACKLIST.md`
-4) Start a session by pasting this into Cursor chat:
-
-```text
-You are operating inside SunoWell for Cursor.
-Load and follow: ./GIT/sunowell/AGENT-PLAYBOOK.md
-
-Project Location: ./GIT/sunowell/projects/<your-album-name>/
-
-This session I want:
-1) Generate a batch of 8 tracks (style + lyrics prompts) for the next run.
-2) Keep cohesion high, but vary energy and arrangement per track.
-3) Output the batch in a copy/paste block format for Suno.
+```
+You describe what you want
+→ SunoWell generates copy/paste-ready prompts
+→ Prompts save to your Library as .txt files
+→ Library self-organizes by genre, mood, project
+→ You always have a reproducible starting point
 ```
 
----
-
-## The loop (why this works)
-
-SunoWell makes the agent do what humans do when they are good at a craft:
-
-1) Load constraints (style bible, lyric bible, tracklist)
-2) Generate candidates
-3) Evaluate what happened (notes + IDs/links)
-4) Iterate intentionally
-
-No magic. Just an explicit memory loop.
+The folder is the memory. The files are the code. Nothing gets lost.
 
 ---
 
-## Example: copy/paste batch output (3 tracks)
+## How It Works
 
-Use this as the format SunoWell will emit. You copy/paste each StylePrompt and LyricsPrompt into Suno.
+Load SunoWell in Cursor (or any LLM that can read files). Give it instructions:
+
+> "Make me 8 dark electronic beats with warm bass and glitchy textures"
+
+> "Generate a 6-track album about healing after burnout. Downtempo, first-person lyrics, cohesive but varied."
+
+SunoWell produces `.txt` files you copy/paste directly into Suno:
 
 ```text
-[SW-BATCH-EXAMPLE-001]
+[SUNOWELL BATCH: 2025-12-13-dark-electronic]
+
+---
 
 TrackID: SW01
-Title: Signal_Repair
+Title: Signal_Decay
+Mode: instrumental
+
 StylePrompt:
-  Alt-electronic, mid-tempo, crisp drums, warm bass, airy synths, subtle glitch texture, modern mix, melodic, uplifting but tense.
+Dark electronic, 95 BPM, warm sub bass, glitchy textures, tight drums, atmospheric pads, modern clean mix, nocturnal mood
+
 LyricsPrompt:
-  Write lyrics in first person. Theme: rebuilding focus after distraction. Structure: Verse 1 (8 lines), Chorus (4 lines hook), Verse 2 (8), Chorus (4), Bridge (4), Final Chorus (4). Use concrete images. Keep lines singable.
+INSTRUMENTAL
+
+---
 
 TrackID: SW02
-Title: Window_Of_Tolerance
-StylePrompt:
-  Downtempo, cinematic electronic, soft percussion, pulsing sub, sparse piano motifs, intimate, nocturnal, high clarity.
-LyricsPrompt:
-  Write lyrics as a calm inner monologue. Theme: staying present without numbing. Structure: Verse (10 lines), Chorus (4), Verse (10), Chorus (4), Outro (4). Avoid clichés. Keep it direct.
-
-TrackID: SW03
-Title: The_Algorithm_Is_Not_My_God
-StylePrompt:
-  Dark pop, tight rhythm, punchy drums, hypnotic synth riff, confident vocal space, modern radio mix, controlled aggression.
-LyricsPrompt:
-  Write lyrics with a defiant tone. Theme: refusing to outsource identity. Structure: Verse (8), Chorus (4), Verse (8), Chorus (4), Bridge (4), Chorus (4). Put the hook in the chorus. Keep rhyme light and natural.
+...
 ```
+
+Open the file. Copy. Paste into Suno. Generate. Done.
 
 ---
 
-## Folder map
+## The Library
 
-```text
-sunowell/
-  README.md
-  AGENT-PLAYBOOK.md
-  SYSTEM-DESIGN.md
-  GETTING-STARTED.md
-  HEALTH-CHECK.md
-  SUNO-VERSION.md
-  prompt-packs/
-  templates/
+Every batch saves to an organized library:
+
+```
+Library/
+  electronic/
+    2025-12-13-dark-electronic.txt
+    2025-12-14-ambient-exploration.txt
+  hip-hop/
+  pop/
   projects/
+    burnout-recovery/
+  _unsorted/
+  _archive/
+```
+
+The library self-organizes. Nothing gets deleted. You can browse, reuse, and iterate on any prompt you've ever generated.
+
+---
+
+## Quick Start
+
+1. **Open this folder in Cursor** (or keep BEOS open and work here)
+
+2. **Start a session:**
+   ```text
+   Load: ./GIT/sunowell/SUNOWELL.md
+   
+   Generate 10 lo-fi hip-hop beats with jazzy samples and tape hiss.
+   ```
+
+3. **Get your prompts** → Saved to `Library/hip-hop/YYYY-MM-DD_lofi-jazzy.txt`
+
+4. **Copy/paste into Suno** → Generate your tracks
+
+That's it. No setup required for simple batches.
+
+---
+
+## Two Modes
+
+### Quick Mode (Default)
+Describe what you want → Get prompts → Done.
+
+Perfect for exploration, singles, or building your library.
+
+### Project Mode
+For cohesive albums with:
+- Style bible (locked palette)
+- Lyric bible (themes, POV, constraints)
+- Tracklist planning
+- Session-to-session continuity
+- Pattern tracking to prevent sameness
+
+Use `templates/album-project-template/` to start a project.
+
+---
+
+## Why This Works
+
+SunoWell makes explicit what good music producers do intuitively:
+
+1. **Lock the palette** — Decide what's in and what's banned
+2. **Vary within constraints** — Change energy, not genre
+3. **Track what worked** — Know which knob caused the magic
+4. **Build a library** — Never lose a good prompt again
+
+The system is just Markdown files. No dependencies. No database. The files are the program.
+
+---
+
+## Folder Structure
+
+```
+sunowell/
+  SUNOWELL.md          ← Core system (load this)
+  AGENT-PLAYBOOK.md    ← Full agent instructions
+  Library/             ← Your prompt library
+    LIBRARY_PROTOCOL.md
+    _Index.md
+    electronic/
+    hip-hop/
+    ...
+  prompt-packs/        ← Reusable recipe modules
+  templates/           ← Album project templates
+  projects/            ← Full album projects (optional)
 ```
 
 ---
 
-## Cohesion controls (albums that actually stay coherent)
+## Built For
 
-SunoWell uses three layers:
-- `STYLE-BIBLE.md`: the sound palette and banned elements
-- `LYRIC-BIBLE.md`: POV, themes, language constraints, motifs
-- `prompt-packs/COHESION-KIT.md`: controlled-variation knobs that keep it dynamic without drifting
+- **Suno power users** who batch-generate and iterate
+- **Album builders** who need cohesion across tracks
+- **Anyone tired of losing good prompts** to browser history
 
 ---
 
-## Versioning
+## Part of BEOS
 
-Suno changes. Prompting best practice changes with it.
+SunoWell is a subroutine of the BrightEyed Operating System (BEOS), a file-based AI operating system built on the principle that English is code and folders are memory.
 
-SunoWell keeps a single truth file (`SUNO-VERSION.md`) and each project pins a short "assumptions snapshot" inside `PROJECT.md` so old projects remain reproducible.
+Other BEOS subroutines:
+- **InfoHunter** — Research and knowledge synthesis
+- **InkWell** — Long-form writing with maintained coherence
+- **Lens Atlas** — Modular cognitive engines for any context
 
 ---
 
 ## License
 
-If you publish this as a repo, MIT is a good default so people can drop it into any workspace.
-
-
+MIT — Use it, modify it, build on it.

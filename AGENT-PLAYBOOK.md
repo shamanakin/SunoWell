@@ -1,159 +1,166 @@
 # SunoWell Agent Playbook
 
-This document is for agents. Read it at the start of every SunoWell session and follow it precisely.
+> This is for agents. Read it at session start. Follow it precisely.
 
-SunoWell is a Markdown-based environment for batch generating Suno prompts. The file system is the memory.
-
----
-
-## The core loop
-
-Execute this loop for every session:
-
-1) LOAD CONTEXT  
-2) PRE-FLIGHT CHECK  
-3) GENERATE BATCH  
-4) SELF-CHECK  
-5) UPDATE STATE  
-6) PROPOSE NEXT STEPS  
-
-Do not skip steps.
+SunoWell has two modes: **Quick Mode** and **Project Mode**. Default to Quick Mode unless the user explicitly wants album-level cohesion tracking.
 
 ---
 
-## 1) LOAD CONTEXT
+## Quick Mode (Default)
 
-Minimum context required:
-- this playbook
-- the project `PROJECT.md`
-- the current batch target (usually `BATCHES.md` and `TRACKLIST.md`)
+Use when: user gives simple instructions like "make me 5 trap beats" or "generate 10 dark electronic tracks with lyrics."
 
-Load in this order:
-1. `PROJECT.md`
-2. `SUNO-VERSION.md` (system-level)
-3. `STYLE-BIBLE.md`
-4. `LYRIC-BIBLE.md`
-5. `TRACKLIST.md`
-6. `BATCHES.md`
-7. `PATTERN-TRACKING.md`
-8. latest `HANDOFF.md`
-9. relevant song cards in `songs/` (only for tracks being iterated)
-10. relevant `prompt-packs/*` referenced by the project
+### The Loop
 
-If any required file is missing, stop and propose the fix before generating content.
-
----
-
-## 2) PRE-FLIGHT CHECK
-
-Before generating anything substantial, output this checklist:
-
-```text
-## Pre-flight (SunoWell)
-- Project: <project name>
-- Objective: singles | album | multi-album
-- Cohesion level: low | medium | high
-- Constraints: <clean/explicit policy, banned topics, banned words, etc>
-- Active prompt packs: <list>
-- Tracks in this batch: <count + IDs>
-- Suno assumptions: <1 sentence summary from PROJECT.md snapshot>
-- Validation: <OK / issues>
+```
+1. LOAD     → This playbook + SUNOWELL.md
+2. LISTEN   → Parse user request (genre, count, mode, any constraints)
+3. GENERATE → Create the batch
+4. SAVE     → Write to Library/<category>/YYYY-MM-DD_<slug>.txt
+5. PRESENT  → Show what was created and file location
 ```
 
-Rules:
-- If the objective is unclear, ask one question and stop.
-- If the user wants "state of the art," treat it as a versioned hypothesis and rely on `SUNO-VERSION.md`.
-
----
-
-## 3) GENERATE BATCH
-
-### Output format (Suno Paste Block, copy/paste safe)
-Always output batches in a single plain-text block using ASCII only:
+### Output Format
 
 ```text
-[SW-BATCH-<date>-<slug>]
+[SUNOWELL BATCH: <date>-<slug>]
 
-TrackID: <SW01>
-Title: <OptionalTitle>
-Mode: lyrics|instrumental
-StylePrompt: <single line, ASCII only>
-LyricsPrompt: <single line, ASCII only, or INSTRUMENTAL>
-SelfReply: <optional, single line, ASCII only>
-Notes: <one line intent>
+---
+
+TrackID: SW01
+Title: <Title>
+Mode: lyrics | instrumental
+
+StylePrompt:
+<single line, ASCII only, comma-separated descriptors>
+
+LyricsPrompt:
+<single line or INSTRUMENTAL, ASCII only>
+
+---
+
+TrackID: SW02
+...
 ```
 
-### Content rules
-- StylePrompt must be specific and mix-relevant (tempo, instrumentation, texture, energy).
-- LyricsPrompt must specify: POV, theme, structure, and constraints (singability, cliché avoidance).
-- Keep each track distinct in angle or energy while staying inside the style bible.
-- If the project uses cohesion rules, apply them explicitly (motifs, palette words, banned elements).
-
-### Copy/paste safety rules (hard)
-- Use ASCII punctuation only. Do not use smart quotes, em dashes, or special bullets.
-- Avoid unusual separators. Use ":" and "," and periods.
-- Keep StylePrompt and LyricsPrompt as single lines to reduce paste friction.
-- Do not include Markdown bullets inside prompts. Prompts must be plain sentences.
-
-### Batch size defaults
-- Singles exploration: 8 to 20 tracks per batch
-- Album build: 6 to 12 tracks per batch
-
-If the user asks for a specific batch size, obey it.
+### Rules
+- ASCII only (no smart quotes, em dashes)
+- Single-line prompts (paste-friendly)
+- Each track separated by `---`
+- Save immediately after generating
 
 ---
 
-## 4) SELF-CHECK
+## Project Mode
 
-Run this checklist before presenting the batch:
+Use when: user wants a cohesive album with tracking, iteration, and session continuity.
 
-### Hook and singability
-- Are chorus lines short enough to sing?
-- Is the chorus hook clear and repeatable?
-- Are verses concrete rather than abstract?
+### Setup
 
-### Cohesion
-- Does each track remain inside the style palette?
-- Is variation controlled (energy, arrangement, instrumentation), not random?
+User must create a project folder:
+```
+projects/<project-name>/
+  PROJECT.md
+  STYLE-BIBLE.md
+  LYRIC-BIBLE.md
+  TRACKLIST.md
+  BATCHES.md
+  HANDOFF.md
+  songs/
+```
 
-### Anti-sameness
-- Do not reuse the same chorus shape 5 times.
-- Do not reuse identical rhyme density across all tracks.
-- Vary POV occasionally only if the lyric bible allows it.
+Use `templates/album-project-template/` as the starting point.
 
-### Safety and policy
-- Respect user constraints (clean/explicit, banned topics).
-- Do not generate disallowed content.
+### The Loop
 
-If issues found, revise before presenting.
+```
+1. LOAD CONTEXT
+   - This playbook
+   - PROJECT.md, STYLE-BIBLE.md, LYRIC-BIBLE.md
+   - TRACKLIST.md, BATCHES.md
+   - Latest HANDOFF.md
+   - Relevant prompt-packs/
+
+2. PRE-FLIGHT CHECK
+   Output: project name, cohesion level, constraints, tracks in batch
+
+3. GENERATE BATCH
+   Same format as Quick Mode, but:
+   - Respect style bible palette
+   - Respect lyric bible constraints
+   - Apply cohesion kit rules if active
+
+4. SELF-CHECK
+   - Hooks singable?
+   - Cohesion maintained?
+   - Variation controlled (not random)?
+   - Policy respected (clean/explicit)?
+
+5. SAVE
+   - Batch to Library/projects/<project-name>/
+   - Update BATCHES.md with batch log
+   - Create/update song cards in songs/
+
+6. UPDATE STATE
+   - BATCHES.md: append batch summary
+   - PATTERN-TRACKING.md: record patterns used
+   - HANDOFF.md: session summary for next session
+
+7. PROPOSE NEXT STEPS
+   - What was produced
+   - What to generate next
+   - One small experiment for next batch
+```
 
 ---
 
-## 5) UPDATE STATE
+## Library Integration
 
-After a batch is generated and the user runs it in Suno, you must help capture results.
+All batches (Quick or Project) save to the Library:
+- Quick Mode: `Library/<genre>/YYYY-MM-DD_<slug>.txt`
+- Project Mode: `Library/projects/<project-name>/YYYY-MM-DD_<slug>.txt`
 
-### Update targets
-- `BATCHES.md`: append the batch with date, summary, and which knobs changed
-- `songs/<TrackID>.md`: create or update song cards for tracks that matter
-- `PATTERN-TRACKING.md`: record patterns used so next batch avoids repetition
-- `HANDOFF.md`: session summary and next move
-
-### What to record (metadata-only)
-- the exact prompts used
-- Suno links/IDs (user provides)
-- 2 to 5 bullet notes: what worked, what failed, what to change next
-
-Do not store audio files unless the user explicitly requests it.
+See `Library/LIBRARY_PROTOCOL.md` for placement rules.
 
 ---
 
-## 6) PROPOSE NEXT STEPS
+## Copy/Paste Safety (Hard Rules)
 
-End the session with:
-- what was produced
-- what to generate next
-- one small experiment to run next batch
-- any open questions that block progress
+These are non-negotiable:
+- ASCII punctuation only (no curly quotes, no em dashes)
+- No markdown inside prompts (no bullets, no headers)
+- StylePrompt and LyricsPrompt are single lines
+- Use commas and periods for separation
 
+---
 
+## Using Prompt Packs
+
+Reference these when helpful:
+- `prompt-packs/STYLE-RECIPES.md` → genre-specific starting points
+- `prompt-packs/LYRIC-RECIPES.md` → structure scaffolds
+- `prompt-packs/COHESION-KIT.md` → album cohesion controls
+- `prompt-packs/CONSTRAINTS-AND-FAILMODES.md` → common problems and fixes
+
+Don't require users to read these. Use them internally.
+
+---
+
+## Defaults
+
+| Parameter | Default |
+|-----------|---------|
+| Batch size | 6-10 tracks |
+| Mode | instrumental (unless lyrics requested) |
+| Cohesion | medium (controlled variation) |
+| Tempo specificity | include BPM range |
+| Save location | `Library/<inferred-genre>/` |
+
+---
+
+## When Stuck
+
+- **Vague request?** → Ask ONE question: "What genre/mood? Vocals or instrumental? How many tracks?"
+- **Can't infer genre?** → Save to `Library/_unsorted/`
+- **Project file missing?** → Stop and propose fix before generating
+- **Cohesion drifting?** → Tighten palette, lock more constraints

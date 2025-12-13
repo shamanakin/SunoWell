@@ -1,96 +1,125 @@
-# SunoWell for Cursor System Design
+# SunoWell System Design
 
-SunoWell is a Markdown-based system for generating music prompts for Suno with consistency and iteration discipline.
-
-It is intentionally similar to InkWell, but the unit of work is a song, and the output is copy/paste prompt batches.
+SunoWell is a Markdown-based system for generating music prompts for Suno with persistence, organization, and iteration discipline.
 
 ---
 
-## Design philosophy
+## Design Philosophy
 
-### 1) English as code
-The system logic is expressed as Markdown files. The files are the program.
+### 1) English as Code
+The system logic is expressed as Markdown files. The files are the program. No dependencies, no database, no tooling required.
 
-### 2) External memory over internal memory
-Agents do not "remember." They read project state and update it.
+### 2) Files as Memory
+Agents do not "remember." They read state and update it. The Library is the memory. Generated prompts persist as `.txt` files organized by category.
 
-### 3) Recursive loop
-The power comes from repeating:
+### 3) Recursive Loop
+Power comes from repeating:
+```
+load context → generate → save to library → repeat
+```
 
-load context → generate → self-check → update state → repeat
+### 4) Controlled Variation
+Good music batches are not random. They vary within a palette. SunoWell encodes the palette (constraints) and the knobs that vary (energy, arrangement, texture).
 
-### 4) Controlled variation
-Good music batches are not random. They vary within a palette.
-
-SunoWell encodes the palette (style bible), the lyrical world (lyric bible), and the knobs that vary (cohesion kit).
-
----
-
-## Architecture overview
-
-### Layer 1: Behavioral core
-- `AGENT-PLAYBOOK.md` defines the executable workflow for agents.
-
-### Layer 2: Reusable modules (prompt packs)
-- `prompt-packs/` contains recipe modules that can be reused across projects.
-
-### Layer 3: Project state
-- `projects/<name>/` contains the album or singles project state.
-
-### Layer 4: Local state (song cards)
-- `projects/<name>/songs/*.md` store track-level intent, prompts, and results notes.
+### 5) Zero Friction Output
+Every generated prompt is immediately copy/paste ready for Suno. ASCII only, single-line prompts, no formatting to strip out.
 
 ---
 
-## Why this solves the real Suno workflow problems
+## Architecture Overview
 
-### Problem: prompt drift
-You get a great track. Next day you cannot reproduce it.
+### Layer 1: Core System
+- `SUNOWELL.md` — Primary activation file (load this)
+- `AGENT-PLAYBOOK.md` — Full behavioral specification for agents
 
-Fix: the exact prompt and the exact constraints live in the song card and the batch log.
+### Layer 2: Library (Persistent Memory)
+- `Library/` — All generated prompts save here
+- `Library/LIBRARY_PROTOCOL.md` — Dynamic organization rules
+- `Library/_Index.md` — Browseable index of all content
+- Subfolders by genre, mood, or project
 
-### Problem: album incoherence
-Each track becomes a different genre by accident.
+### Layer 3: Prompt Packs (Reusable Modules)
+- `prompt-packs/STYLE-RECIPES.md` — Genre-specific starting points
+- `prompt-packs/LYRIC-RECIPES.md` — Lyric structure scaffolds
+- `prompt-packs/COHESION-KIT.md` — Album cohesion controls
+- `prompt-packs/CONSTRAINTS-AND-FAILMODES.md` — Common problems and fixes
 
-Fix: style bible + cohesion kit keep palette constant and vary only approved knobs.
-
-### Problem: iteration amnesia
-You forget which knob caused the improvement.
-
-Fix: batch logs and pattern tracking make experiments explicit.
-
-### Problem: "state of the art" rots
-Suno changes.
-
-Fix: `SUNO-VERSION.md` stores version assumptions and projects pin a snapshot in `PROJECT.md`.
+### Layer 4: Project State (Optional)
+- `projects/<name>/` — Full album projects with tracking
+- Includes: PROJECT.md, STYLE-BIBLE.md, LYRIC-BIBLE.md, TRACKLIST.md, BATCHES.md, songs/
 
 ---
 
-## Data flow
+## Data Flow
 
-```mermaid
-flowchart TD
-  UserIntent[UserIntent] --> ProjectState[ProjectStateFiles]
-  ProjectState --> Agent[AgentLoop]
-  PromptPacks[PromptPacks] --> Agent
-  Agent --> Batch[BatchOutputForSuno]
-  Batch --> Suno[SunoUI]
-  Suno --> Results[LinksIDsNotes]
-  Results --> SongCards[SongCards]
-  SongCards --> Agent
+### Quick Mode
+```
+User Intent
+    ↓
+SUNOWELL.md (parse request)
+    ↓
+Generate Batch
+    ↓
+Save to Library/<category>/YYYY-MM-DD_<slug>.txt
+    ↓
+Present to User
+```
+
+### Project Mode
+```
+User Intent + Project State
+    ↓
+AGENT-PLAYBOOK.md (load bibles, constraints)
+    ↓
+Generate Batch (respecting palette)
+    ↓
+Save to Library/projects/<name>/
+    ↓
+Update Project State (BATCHES.md, HANDOFF.md)
+    ↓
+Present + Propose Next Steps
 ```
 
 ---
 
-## Core files (project)
+## Why This Solves Real Suno Workflow Problems
 
-- `PROJECT.md`: what we are making, constraints, and active packs
-- `STYLE-BIBLE.md`: palette, tempo band, instrumentation, banned elements
-- `LYRIC-BIBLE.md`: POV, themes, motif rules, language constraints
-- `TRACKLIST.md`: arc and intent per track
-- `BATCHES.md`: batches run, knobs changed, quick outcomes
-- `PATTERN-TRACKING.md`: prevents sameness across an album
-- `HANDOFF.md`: continuity between sessions
-- `songs/*.md`: smallest unit of state
+### Problem: Prompt Loss
+You get a great track. Close the tab. Can't find the prompt.
 
+**Fix:** Every prompt saves to the Library. Browse it anytime.
 
+### Problem: Album Incoherence
+Each track drifts to a different genre.
+
+**Fix:** Style bible locks the palette. Cohesion kit controls variation.
+
+### Problem: Iteration Amnesia
+You forget which knob caused the improvement.
+
+**Fix:** Batch logs and pattern tracking make experiments explicit.
+
+### Problem: "Best Practice" Rots
+Suno changes. What worked last month might not work now.
+
+**Fix:** `SUNO-VERSION.md` stores versioned assumptions. Projects pin a snapshot.
+
+### Problem: Friction
+Markdown formatting, special characters, multi-line prompts break when pasted.
+
+**Fix:** ASCII only, single-line prompts, zero formatting to clean up.
+
+---
+
+## Core Files Reference
+
+| File | Purpose |
+|------|---------|
+| `SUNOWELL.md` | Primary system file — load this |
+| `AGENT-PLAYBOOK.md` | Full agent behavioral spec |
+| `Library/LIBRARY_PROTOCOL.md` | How the library organizes itself |
+| `Library/_Index.md` | Browseable index |
+| `prompt-packs/*.md` | Reusable recipe modules |
+| `templates/` | Project templates |
+| `projects/` | Full album projects |
+| `SUNO-VERSION.md` | Versioned Suno assumptions |
